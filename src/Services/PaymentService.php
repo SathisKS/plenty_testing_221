@@ -205,8 +205,6 @@ class PaymentService
                     $requestData['paid_amount'] = ($requestData['tid_status'] == '100') ? $requestData['amount'] : '0';
                 }
             } else {
-                $statusMessage = $this->paymentHelper->getNovalnetStatusText($requestData);
-                $this->sessionStorage->getPlugin()->setValue('novalnet_status_message', $statusMessage);
                 $requestData['type'] = 'cancel';
                 $requestData['paid_amount'] = '0';
             }
@@ -959,8 +957,6 @@ class PaymentService
             $this->pushNotification($notificationMessage, 'success', 100);
             
         } else {
-            $statusMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
-            $this->sessionStorage->getPlugin()->setValue('novalnet_status_message', $statusMessage);
             $this->pushNotification($notificationMessage, 'error', 100);
         }
           
@@ -976,6 +972,7 @@ class PaymentService
     public function additionalInfo ($nnPaymentData) {
         
      $lang = strtolower((string)$nnPaymentData['lang']);
+     $statusMessage = $this->paymentHelper->getNovalnetStatusText($nnPaymentData);
      $additional_info = [
         'currency' => $nnPaymentData['currency'],
         'product_id' => !empty($nnPaymentData['product_id']) ? $nnPaymentData['product_id'] : $nnPaymentData['product'] ,
@@ -983,7 +980,8 @@ class PaymentService
         'plugin_version' => $nnPaymentData['system_version'],
         'test_mode' => !empty($nnPaymentData['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$lang) : '0',
         'invoice_type'      => !empty($nnPaymentData['invoice_type']) ? $nnPaymentData['invoice_type'] : '0' ,
-        'invoice_account_holder' => !empty($nnPaymentData['invoice_account_holder']) ? $nnPaymentData['invoice_account_holder'] : '0' 
+        'invoice_account_holder' => !empty($nnPaymentData['invoice_account_holder']) ? $nnPaymentData['invoice_account_holder'] : '0',
+        'tx_status_msg' => !empty($statusMessage) ? $statusMessage : ''
         ];
     
      return $additional_info;
