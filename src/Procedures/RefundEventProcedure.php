@@ -74,6 +74,7 @@ class RefundEventProcedure
         /* @var $order Order */
      
        $order = $eventTriggered->getOrder(); 
+       $parent_order_id = $order->id;
 
         // Checking order type
        if ($order->typeId == OrderType::TYPE_CREDIT_NOTE) {
@@ -156,25 +157,5 @@ class RefundEventProcedure
                     }   
         }
     }
-    
-    /**
-     * Setup the transction log for the refund process
-     *
-     * @param array $paymentRequestData
-     * @param array $paymentData
-     */
-    public function saveTransactionLog($paymentRequestData,$paymentData)
-    {
-       
-        $insertTransactionLog = [
-        'callback_amount' => $paymentRequestData['refund_param'],
-        'amount'     => (float) ($paymentData['parent_order_amount'] * 100) ,
-        'tid'            => $paymentRequestData['tid'],
-        'ref_tid'         => $paymentData['tid'],
-        'order_no'        => $paymentData['parent_order_id'],
-        'payment_name'    => $paymentData['payment_name']
-        ];
-        $this->transaction->saveTransaction($insertTransactionLog);
-    }
-   
+
 }
